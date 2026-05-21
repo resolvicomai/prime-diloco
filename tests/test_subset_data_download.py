@@ -14,6 +14,9 @@ def load_subset_data_module():
     hf_stub = types.ModuleType("huggingface_hub")
     hf_stub.get_token = lambda: None
     sys.modules.setdefault("huggingface_hub", hf_stub)
+    tqdm_stub = types.ModuleType("tqdm")
+    tqdm_stub.tqdm = lambda iterable, *args, **kwargs: iterable
+    sys.modules.setdefault("tqdm", tqdm_stub)
 
     module_path = Path(__file__).resolve().parents[1] / "scripts" / "subset_data.py"
     spec = importlib.util.spec_from_file_location("subset_data", module_path)
