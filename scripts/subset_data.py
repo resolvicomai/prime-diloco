@@ -55,13 +55,18 @@ def _download_file(data_file: str, save_path: str) -> None:
             logger.debug(f"Creating directory: {parent}")
             os.makedirs(parent, exist_ok=True)
 
-    cmd = [
-        "wget",
-        f'--header="Authorization: Bearer {get_token()}"',
-        f"https://huggingface.co/{data_file}?download=true",
-        f"-O {save_path}",
-    ]
-    result = subprocess.run(" ".join(cmd), shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    cmd = ["wget"]
+    token = get_token()
+    if token is not None:
+        cmd.append(f"--header=Authorization: Bearer {token}")
+    cmd.extend(
+        [
+            f"https://huggingface.co/{data_file}?download=true",
+            "-O",
+            save_path,
+        ]
+    )
+    result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     if result.returncode != 0:
         logger.error(f"Error downloading file: {data_file}")
         logger.error(result.stderr.decode("utf-8"))
